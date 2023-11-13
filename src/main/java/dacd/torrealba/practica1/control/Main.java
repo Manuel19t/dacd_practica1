@@ -5,6 +5,8 @@ import dacd.torrealba.practica1.model.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Main {
     public static void main(String[] args) {
@@ -23,8 +25,21 @@ public class Main {
         WeatherStore weatherStore = new SQLiteWeatherStore(locations);
         WeatherController weatherController = new WeatherController(weatherSupplier, weatherStore);
 
-        for (Location location : locations) {
-            weatherController.execute(location, Instant.now());
-        }
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+
+            @Override
+            public void run() {
+                for (Location location : locations) {
+                    weatherController.execute(location, Instant.now());
+                }
+            }
+        };
+
+        long delay = 0;
+        long period = 60 * 60 * 1000;
+
+        timer.scheduleAtFixedRate(task, delay, period);
+
     }
 }
