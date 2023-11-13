@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SQLiteWeatherStore implements WeatherStore {
     private static final String DB = "jdbc:sqlite:Weather.db";
-    private List<Location> locations;
+    private final List<Location> locations;
 
     public SQLiteWeatherStore(List<Location> locations) {
         this.locations = locations;
@@ -16,7 +16,7 @@ public class SQLiteWeatherStore implements WeatherStore {
     @Override
     public void save(Weather weather) {
         String tableName = getTableName(weather.getLocation().getIsland());
-        String selectQuery = "SELECT * FROM " + tableName + "WHERE TimeStamp = ?";
+        String selectQuery = "SELECT * FROM " + tableName + " WHERE TimeStamp = ?";
 
         try (Connection connection = DriverManager.getConnection(DB);
              PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
@@ -56,7 +56,7 @@ public class SQLiteWeatherStore implements WeatherStore {
 
     @Override
     public Weather get(Location location, Instant instant) {
-        String tableName =getTableName(location.getIsland());
+        String tableName = getTableName(location.getIsland());
         String selectQuery = "SELECT * FROM " + tableName + " WHERE TimeStamp = ?";
 
         try (Connection connection = DriverManager.getConnection(DB);
@@ -71,7 +71,7 @@ public class SQLiteWeatherStore implements WeatherStore {
                 double wind = resultSet.getDouble("Wind");
                 double lat = resultSet.getDouble("Lat");
                 double lon = resultSet.getDouble("Lon");
-                String island = resultSet.getString("Island");
+                String island = resultSet.getString("Location");
                 Instant ts = resultSet.getTimestamp("TimeStamp").toInstant();
 
                 return new Weather(ts, rain, temp, wind, humidity, new Location(island, lat, lon));

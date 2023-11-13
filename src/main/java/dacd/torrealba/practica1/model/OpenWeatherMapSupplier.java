@@ -49,7 +49,7 @@ public class OpenWeatherMapSupplier implements WeatherSupplier {
     }
 
     private List<Weather> parseJsonResponse(String jsonResponse) {
-        Gson gson =new Gson();
+        Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(jsonResponse, JsonObject.class);
 
         JsonObject cityObject = jsonObject.getAsJsonObject("city");
@@ -67,12 +67,12 @@ public class OpenWeatherMapSupplier implements WeatherSupplier {
             if (isMidNight(Instant.ofEpochSecond(dt))) {
                 JsonObject mainObject = listObject.getAsJsonObject("main");
                 double temperature = mainObject.get("temp").getAsDouble();
-                double wind = mainObject.getAsJsonObject("wind").get("speed").getAsDouble();
+                double wind = listObject.getAsJsonObject("wind").get("speed").getAsDouble();
                 int humidity = mainObject.get("humidity").getAsInt();
-                double rain = mainObject.get("pop").getAsDouble();
+                double rain = listObject.get("pop").getAsDouble();
 
-                weatherList.add(new Weather(Instant.ofEpochSecond(dt), rain, wind,
-                        temperature, humidity, new Location(islandName, lat, lon)));
+                weatherList.add(new Weather(Instant.ofEpochSecond(dt), rain,
+                        temperature, wind, humidity, new Location(islandName, lat, lon)));
             }
         }
         return weatherList;
